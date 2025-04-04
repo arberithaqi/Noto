@@ -1,0 +1,1 @@
+// Verwaltung des App-Lifecycles (Start, Schließen etc.) 

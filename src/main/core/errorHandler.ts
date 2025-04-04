@@ -1,0 +1,1 @@
+// Globale Fehlerbehandlung für den Main-Prozess 

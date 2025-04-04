@@ -1,0 +1,1 @@
+// Platzhalter für die Timer/Pomodoro Funktionalität (Main-Prozess Logik, falls benötigt) 

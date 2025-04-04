@@ -1,0 +1,1 @@
+// Platzhalter für die ChatGPT-Integration (Main-Prozess) 

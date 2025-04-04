@@ -1,0 +1,1 @@
+// Platzhalter für Fensterverwaltungslogik (z.B. mehrere Fenster) 

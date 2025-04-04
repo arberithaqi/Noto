@@ -1,0 +1,1 @@
+// Platzhalter für gemeinsame TypeScript-Typen (Main & Renderer) 

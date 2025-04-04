@@ -1,0 +1,1 @@
+// Platzhalter für die Global Hotkey Funktionalität (Main-Prozess) 

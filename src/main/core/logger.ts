@@ -1,0 +1,1 @@
+// Logging-Konfiguration und Funktionen für den Main-Prozess 

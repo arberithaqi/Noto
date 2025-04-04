@@ -1,0 +1,1 @@
+// Platzhalter für IPC-Handler (z.B. für Notiz-Speicherung) 

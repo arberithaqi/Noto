@@ -1,0 +1,1 @@
+// Platzhalter für gemeinsame Konstanten (Main & Renderer) 
