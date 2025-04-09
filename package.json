@@ -16,6 +16,8 @@
     "lint": "eslint src --ext .ts,.tsx"
   },
   "dependencies": {
+    "electron-log": "^5.3.3",
+    "electron-updater": "^6.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
