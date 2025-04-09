@@ -10,15 +10,32 @@ body,
   padding: 0;
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
   overflow: hidden; /* Prevent body scrollbars */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: transparent; /* Transparent für den Blur-Effekt */
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  padding-top: 25px; /* Abstand von den Fenstersteuerelemente */
+  -webkit-app-region: drag; /* Ermöglicht das Ziehen des Fensters */
 }
 
 .note-editor {
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 10px); /* Dynamische Höhe abhängig von der Fensterhöhe */
   border: none;
-  padding: 1rem; /* Add some padding for better readability */
+  padding: 1.5rem; /* Add some padding for better readability */
   font-size: 1rem; /* Adjust font size as needed */
   box-sizing: border-box; /* Include padding and border in the element's total width and height */
   resize: none; /* Disable resizing */
   outline: none; /* Remove default focus outline */
+  background-color: transparent;
+  -webkit-app-region: no-drag; /* Erlaubt Textauswahl */
+  overflow-y: auto; /* Scrolling aktivieren */
+  line-height: 1.6;
 } 
+
+.note-editor::placeholder {
+  color: #cccccc;
+}

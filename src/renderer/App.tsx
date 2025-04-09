@@ -14,9 +14,12 @@ function App() {
 
   return (
     <div className="App">
-      {/* <h1>Noto App</h1> */}
-      {/* <p>Minimalistisches Notiz-App Grundgerüst</p> */}
-      <textarea className="note-editor" placeholder="Schreibe deine Notiz hier..."></textarea>
+      <textarea 
+        className="note-editor" 
+        placeholder="Schreibe deine Notiz hier...^^"
+        spellCheck="false"
+        autoFocus
+      ></textarea>
       
       {/* Platzhalter für Feature-Komponenten */}
       {/* <NoteEditor /> */}
