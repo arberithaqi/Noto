@@ -1,5 +1,10 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+// ES Module __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export class WindowManager {
   private mainWindow: BrowserWindow | null = null;
@@ -26,7 +31,6 @@ export class WindowManager {
 
     // Lade die index.html der App.
     // WICHTIG: Der Pfad muss relativ zum *Ausführungsort* von Electron sein (dist Verzeichnis)
-    // __dirname in diesem Kontext zeigt auf dist/main/window
     const htmlPath = path.join(__dirname, '../../renderer/index.html');
     this.mainWindow.loadFile(htmlPath);
 

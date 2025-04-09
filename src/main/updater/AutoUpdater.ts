@@ -1,6 +1,11 @@
 import { dialog } from 'electron';
-import { autoUpdater, UpdateInfo, ProgressInfo } from 'electron-updater';
+import * as electronUpdater from 'electron-updater';
 import log from 'electron-log';
+
+// Verwende die importierten Komponenten
+const { autoUpdater } = electronUpdater;
+type UpdateInfo = electronUpdater.UpdateInfo;
+type ProgressInfo = electronUpdater.ProgressInfo;
 
 export class AppUpdater {
   constructor() {
@@ -38,13 +43,15 @@ export class AppUpdater {
       title: 'Update verfügbar',
       message: `Eine neue Version (${info.version}) von Noto ist verfügbar. Möchten Sie das Update jetzt herunterladen?`,
       buttons: ['Ja', 'Nein']
-    }).then(({ response }) => {
-      if (response === 0) { // Ja
+    }).then(({ response }: { response: number }) => {
+      if (response === 0) {
         log.info('User agreed to download update.');
         autoUpdater.downloadUpdate();
       } else {
         log.info('User declined update download.');
       }
+    }).catch(error => {
+      log.error('Update error:', error);
     });
   }
 
@@ -72,13 +79,15 @@ export class AppUpdater {
       title: 'Update bereit zur Installation',
       message: `Das Update (${info.version}) wurde heruntergeladen. Starten Sie die Anwendung neu, um das Update zu installieren.`,
       buttons: ['Jetzt neu starten', 'Später']
-    }).then(({ response }) => {
-      if (response === 0) { // Jetzt neu starten
+    }).then(({ response }: { response: number }) => {
+      if (response === 0) {
         log.info('User agreed to quit and install.');
         autoUpdater.quitAndInstall();
       } else {
         log.info('User chose to install later.');
       }
+    }).catch(error => {
+      log.error('Update install error:', error);
     });
   }
 

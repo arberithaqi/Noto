@@ -1,80 +1,80 @@
 # Noto App
 
-Eine minimalistische Notiz-App mit Electron und React, entwickelt in TypeScript.
+A minimalist note-taking app built with Electron and React, developed in TypeScript.
 
-## Features (geplant)
+## Features (planned)
 
-📝 **Notiz-Funktionen:**
-- Plain Text Editor mit Indents, Nummerierung (1., a., i. usw.)
-- Contextual Math (z. B. "2 Betten à 4 Pflanzen = 8")
-- Einheiten- & Währungsumrechnung (z. B. km → miles, € → $)
-- Reaktive Variablen (a = 5; b = a * 2)
+📝 **Note Functions:**
+- Plain Text Editor with indents, numbering (1., a., i., etc.)
+- Contextual Math (e.g., "2 beds at 4 plants = 8")
+- Unit & Currency conversion (e.g., km → miles, € → $)
+- Reactive variables (a = 5; b = a * 2)
 
-🧠 **Tools & Komfort:**
+🧠 **Tools & Comfort:**
 - Timer & Pomodoro
-- Screenshot zu Text (OCR)
-- One-Click Export (.txt oder .md)
-- Global Hotkey für sofortigen Zugriff
-- ChatGPT-Integration
+- Screenshot to Text (OCR)
+- One-Click Export (.txt or .md)
+- Global Hotkey for instant access
+- ChatGPT integration
 
-## Entwicklung
+## Development
 
-### Voraussetzungen
+### Prerequisites
 - Node.js (>= 18)
-- npm oder yarn
+- npm or yarn
 
 ### Installation
 ```bash
-# Repository klonen
+# Clone the repository
 git clone [repo-url]
 cd noto-app
 
-# Abhängigkeiten installieren
+# Install dependencies
 npm install
 ```
 
-### Entwicklungsserver starten
+### Start Development Server
 ```bash
-# Entwicklungsmodus
+# Development mode
 npm run dev
 
-# Electron starten
+# Start Electron
 npm run electron:start
 ```
 
-### Build erstellen
+### Create Build
 ```bash
 npm run build
 ```
 
-## Projektstruktur
+## Project Structure
 
 ```
 .
 ├── src/
 │   ├── main/                   # Electron Main Process
 │   │   ├── index.ts
-│   │   ├── windows/           # Fensterverwaltung
-│   │   ├── ipc/              # IPC-Handler
-│   │   ├── features/         # Module (Timer, Export etc.)
-│   │   └── core/            # App-Lifecycle, Logging etc.
+│   │   ├── windows/           # Window Management
+│   │   ├── ipc/              # IPC Handlers
+│   │   ├── features/         # Modules (Timer, Export, etc.)
+│   │   └── core/            # App Lifecycle, Logging, etc.
 │   ├── renderer/             # Frontend (React)
 │   │   ├── index.html
 │   │   ├── index.tsx
-│   │   ├── components/      # UI-Bausteine
-│   │   ├── features/        # Feature-Module
-│   │   ├── views/          # Seiten
-│   │   ├── state/         # Zustandsverwaltung
+│   │   ├── components/      # UI Components
+│   │   ├── features/        # Feature Modules
+│   │   ├── views/          # Pages
+│   │   ├── state/         # State Management
 │   │   └── styles/        # CSS/SCSS/Tailwind
-│   ├── shared/             # Gemeinsamer Code
+│   ├── shared/             # Shared Code
 │   │   ├── types/
 │   │   ├── utils/
 │   │   └── constants/
-│   └── config/            # Konfigurationen
+│   └── config/            # Configurations
 ├── tests/                # Tests
 ├── scripts/             # Build & Dev Tools
-├── dist/               # Kompilierte App
-└── docs/              # Dokumentation
+├── dist/               # Compiled App
+└── docs/              # Documentation
 ```
 
 ## Lizenz

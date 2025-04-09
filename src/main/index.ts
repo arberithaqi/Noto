@@ -1,4 +1,8 @@
-import { app, BrowserWindow } from 'electron';
+import { app } from 'electron';
+import log from 'electron-log';
+import { WindowManager } from './window/WindowManager.js';
+import { AppUpdater } from './updater/AutoUpdater.js';
+import { ShortcutManager } from './shortcuts/ShortcutManager.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -9,72 +13,100 @@ const isDev = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD =
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Hält eine globale Referenz des Window-Objekts, um Garbage Collection zu verhindern
-let mainWindow: BrowserWindow | null;
+// Globale Instanzen (oder über Dependency Injection verwalten)
+let windowManager: WindowManager;
+let appUpdater: AppUpdater;
+let shortcutManager: ShortcutManager;
 
-function createWindow() {
-  // Erstellt das Browser-Fenster.
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: false, // Wichtig für Sicherheit
-      contextIsolation: true, // Wichtig für Sicherheit
-    },
+// Konfiguriere electron-log zentral
+log.transports.file.level = 'info';
+log.info('---------------------');
+log.info('App starting...');
+log.info(`Version: ${app.getVersion()}`)
+log.info('---------------------');
+
+// Hauptfunktion zum Starten der Anwendung
+async function initializeApp() {
+  // Stelle sicher, dass nur eine Instanz läuft
+  const gotTheLock = app.requestSingleInstanceLock();
+  if (!gotTheLock) {
+    log.warn('Another instance is already running. Quitting.');
+    app.quit();
+    return;
+  }
+  app.on('second-instance', (event: Electron.Event, commandLine: string[], workingDirectory: string) => {
+    // Jemand hat versucht, eine zweite Instanz zu starten.
+    log.warn('Second instance detected. Focusing main window.');
+    if (windowManager) {
+        const mainWindow = windowManager.getMainWindow();
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore();
+            mainWindow.focus();
+        }
+    }
   });
 
-  // Lädt die index.html der App.
-  if (isDev) {
-    // Vite Dev Server URL
-    mainWindow.loadURL('http://localhost:5173'); // Standard Vite Port
-    // Öffnet die DevTools im Entwicklungsmodus
-    mainWindow.webContents.openDevTools();
-  } else {
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
-  }
+  // Initialisiere die Manager-Klassen
+  windowManager = new WindowManager();
+  // Temporär deaktiviert, um die App zum Laufen zu bringen
+  // appUpdater = new AppUpdater();
+  shortcutManager = new ShortcutManager(windowManager);
 
-  // Wird ausgelöst, wenn das Fenster geschlossen wird.
-  mainWindow.on('closed', () => {
-    // Dereferenziert das Window-Objekt.
-    mainWindow = null;
+  // App Lifecycle Events
+  app.whenReady().then(() => {
+    log.info('App is ready.');
+    windowManager.createMainWindow();
+    shortcutManager.registerGlobalShortcuts();
+    // appUpdater.checkForUpdates(); // Temporär deaktiviert
+
+    // --- Feature Module Setup --- 
+    // Feature Module können hier initialisiert werden
+    // import './features/timer/timerMain';
+    // import './features/exporter/exporterMain';
+    // import './features/ocr/ocrMain';
+    // import './features/hotkey/hotkeyMain';
+    // import './features/chatgpt/chatgptMain';
+
+    // macOS spezifisch: Fenster neu erstellen/zeigen, wenn Dock-Icon geklickt wird
+    app.on('activate', () => {
+        log.info('App activated (macOS)');
+        windowManager.handleActivate();
+    });
+
+  }).catch((err: Error) => {
+      log.error('Error during app initialization:', err);
+      // Kritischer Fehler, App kann evtl. nicht starten
+      app.quit();
+  });
+
+  // Wird aufgerufen, bevor die App beendet wird
+  app.on('will-quit', () => {
+    log.info('App is quitting...');
+    // Gib globale Shortcuts frei
+    shortcutManager.unregisterAllShortcuts();
+    log.info('App quit successfully.');
+  });
+
+  // Wird aufgerufen, wenn alle Fenster geschlossen sind
+  app.on('window-all-closed', () => {
+    log.info('All windows closed.');
+    // Auf macOS ist es üblich, dass Apps aktiv bleiben, bis der Benutzer explizit beendet (Cmd+Q)
+    if (process.platform !== 'darwin') {
+      log.info('Quitting app because all windows are closed (non-macOS).');
+      app.quit();
+    }
   });
 }
 
-// Diese Methode wird aufgerufen, wenn Electron mit der Initialisierung fertig ist
-// und bereit ist, Browser-Fenster zu erstellen.
-app.whenReady().then(createWindow);
-
-// Wird ausgelöst, wenn alle Fenster geschlossen sind.
-app.on('window-all-closed', () => {
-  // Unter macOS ist es üblich, dass Anwendungen und ihre Menüleiste
-  // aktiv bleiben, bis der Benutzer explizit mit Cmd + Q beendet.
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+// Starte die Initialisierung
+initializeApp().catch(error => {
+    log.error('Failed to initialize app:', error);
+    process.exit(1); // Beende den Prozess bei kritischem Initialisierungsfehler
 });
-
-app.on('activate', () => {
-  // Unter macOS ist es üblich, ein Fenster der App neu zu erstellen,
-  // wenn das Dock-Icon angeklickt wird und keine anderen Fenster offen sind.
-  if (mainWindow === null) {
-    createWindow();
-  }
-});
-
-// Hier können Sie spezifischen Code für den Hauptprozess einfügen.
-// Sie können auch separate Dateien erstellen und sie hier importieren.
 
 // --- IPC Setup --- 
 // Importiere IPC Handler (Beispiel)
 // import './ipc/exampleHandler';
-
-// --- Feature Module Setup --- 
-// Importiere Feature Module (Beispiele)
-// import './features/timer/timerMain';
-// import './features/exporter/exporterMain';
-// import './features/ocr/ocrMain';
-// import './features/hotkey/hotkeyMain';
-// import './features/chatgpt/chatgptMain';
 
 // --- Core Module Setup ---
 // Importiere Core Module (Beispiele)
