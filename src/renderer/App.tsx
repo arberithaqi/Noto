@@ -1,7 +1,8 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, ChangeEvent } from 'react';
 import './styles/global.css'; // Importiere die globalen Styles
 import PaginationDots from './components/PaginationDots';
 import { useSwipeGesture } from './hooks/useSwipeGesture';
+import { calculateFromString } from './utils/contextualMath'; // <-- Import the utility function
 
 // Importiere Views
 // import HomeView from './views/HomeView';
@@ -25,6 +26,7 @@ function App() {
   
   // State for tracking the current note index
   const [currentNoteIndex, setCurrentNoteIndex] = useState(0);
+  const [result, setResult] = useState<number | string | null>(null); // <-- Add state for the calculation result
   
   // Reference to the textarea 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -49,14 +51,40 @@ function App() {
   }, [notes.length]);
 
   // Handle note content changes
-  const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleNoteChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     const updatedContent = event.target.value;
+    let finalContent = updatedContent;
+
+    // Calculation Logic
+    if (updatedContent.trim().endsWith('=')) {
+      const expressionPart = updatedContent.substring(0, updatedContent.lastIndexOf('=')).trim();
+      console.log('[App] Expression part to calculate:', expressionPart);
+      if (expressionPart) {
+        const calculationResult = calculateFromString(expressionPart);
+        console.log('[App] Received calculation result:', calculationResult);
+        setResult(calculationResult);
+        
+        // Append the result to the content right after the equals sign
+        // Use regex to ensure we only have one space after the equals sign
+        // Add brackets around the result to make it distinguishable
+        finalContent = updatedContent.replace(/\s*=\s*$/, '=') + ' ' + calculationResult;
+      } else {
+        setResult(null); 
+      }
+    } else {
+      setResult(null);
+    }
+
+    // Update note content state with possibly modified content
     setNotes(prevNotes => {
       const newNotes = [...prevNotes];
-      newNotes[currentNoteIndex] = {
-        ...newNotes[currentNoteIndex],
-        content: updatedContent
-      };
+      // Ensure the index is valid before updating
+      if (newNotes[currentNoteIndex]) {
+         newNotes[currentNoteIndex] = {
+           ...newNotes[currentNoteIndex],
+           content: finalContent
+         };
+      }
       return newNotes;
     });
   };
@@ -108,6 +136,14 @@ function App() {
         onChange={handleNoteChange}
       />
       
+      {/* Only display the calculation result visually if needed for debugging */}
+      {/* {result !== null && (
+        console.log('[App] Rendering result div with:', result),
+        <div style={{ marginTop: '10px', padding: '5px', border: '1px solid #eee', borderRadius: '4px', color: 'var(--text-color)' }}>
+          Berechnung: <span style={{ color: 'blue', fontWeight: 'bold' }}>{result}</span>
+        </div>
+      )} */}
+
       <PaginationDots 
         currentIndex={currentNoteIndex}
         totalCount={notes.length}
